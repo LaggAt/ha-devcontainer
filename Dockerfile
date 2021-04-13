@@ -1,10 +1,5 @@
-# See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.163.1/containers/python-3/.devcontainer/base.Dockerfile
-
-# [Choice] Python version: 3, 3.9, 3.8, 3.7, 3.6
-# ARG VARIANT="3"
-# FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
-ARG ARCH=
-FROM ${ARCH}python:3.9-slim-buster
+ARG BASE_IMAGE_PREFIX
+FROM ${BASE_IMAGE_PREFIX}python:3.9-slim-buster
 
 
 # set ENV for excellent ludeeus's scripts
@@ -53,6 +48,10 @@ RUN \
 COPY requirements.txt /tmp/pip-tmp/
 RUN pip3 --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
   && rm -rf /tmp/pip-tmp
+
+# see hooks/post_checkout
+ARG ARCH
+COPY qemu-${ARCH}-static /usr/bin
 
 # Copy files
 COPY rootfs/common /
