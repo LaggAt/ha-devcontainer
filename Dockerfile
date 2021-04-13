@@ -2,7 +2,13 @@
 
 # [Choice] Python version: 3, 3.9, 3.8, 3.7, 3.6
 ARG VARIANT="3"
-FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
+# FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
+FROM python:3.9-slim-buster
+
+
+# set ENV for excellent ludeeus's scripts
+ENV CONTAINER_TYPE=integration
+ENV DEVCONTAINER=True
 
 # open ports
 EXPOSE 8123
@@ -10,14 +16,55 @@ EXPOSE 8123
 # Install Node.js
 ARG INSTALL_NODE="false"
 
+# install additional OS packages.
+RUN \
+  apt-get update && export DEBIAN_FRONTEND=noninteractive \
+  && apt-get -y install --no-install-recommends \
+    bash \
+    bluetooth \
+    bluez \
+    bluez-tools \
+    build-essential \
+    ca-certificates \
+    cython \
+    gcc \
+    git \
+    iputils-ping \
+    libatomic1 \
+    libavcodec-dev \
+    libc-dev \
+    libffi-dev \
+    libjpeg-dev \
+    libpcap-dev \
+    libssl-dev \
+    make \
+    musl-dev \
+    nano \
+    openssh-client \
+    procps rfkill \
+    unzip \
+    vim \
+    wget \
+    zlib1g-dev \ 
+  && rm -fr /var/lib/apt/lists/* \ 
+  && find /usr/local \( -type d -a -name test -o -name tests -o -name '__pycache__' \) -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) -exec rm -rf '{}' \; \ 
+  && rm -fr /tmp/* /var/{cache,log}/*
+
 # pip requirements
 COPY requirements.txt /tmp/pip-tmp/
-RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
-   && rm -rf /tmp/pip-tmp
+RUN pip3 --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
+  && rm -rf /tmp/pip-tmp
 
-# install additional OS packages.
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends bash bluetooth bluez bluez-tools build-essential ca-certificates cython gcc git iputils-ping libatomic1 libavcodec-dev libc-dev libffi-dev libjpeg-dev libpcap-dev libssl-dev make nano openssh-client procps rfkill unzip vim wget zlib1g-dev \ 
-    && rm -fr /var/lib/apt/lists/* \ 
-    && find /usr/local \( -type d -a -name test -o -name tests -o -name '__pycache__' \) -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) -exec rm -rf '{}' \; \ 
-    && rm -fr /tmp/* /var/{cache,log}/*
+# Copy files
+COPY rootfs/common /
+
+# prepare copied files/folders/execute rights
+RUN \
+  chmod +x /usr/bin/container \
+  && mkdir -p /config/custom_components \
+
+# install Home Assistant DEV
+RUN \
+  container init
+
+# 
