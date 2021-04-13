@@ -1,6 +1,9 @@
 ARG BASE_IMAGE_PREFIX
 FROM ${BASE_IMAGE_PREFIX}python:3.9-slim-buster
 
+# see hooks/post_checkout
+ARG ARCH
+COPY qemu-${ARCH}-static /usr/bin
 
 # set ENV for excellent ludeeus's scripts
 ENV CONTAINER_TYPE=integration
@@ -48,10 +51,6 @@ RUN \
 COPY requirements.txt /tmp/pip-tmp/
 RUN pip3 --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
   && rm -rf /tmp/pip-tmp
-
-# see hooks/post_checkout
-ARG ARCH
-COPY qemu-${ARCH}-static /usr/bin
 
 # Copy files
 COPY rootfs/common /
