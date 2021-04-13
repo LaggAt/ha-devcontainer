@@ -1,9 +1,10 @@
 # See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.163.1/containers/python-3/.devcontainer/base.Dockerfile
 
 # [Choice] Python version: 3, 3.9, 3.8, 3.7, 3.6
-ARG VARIANT="3"
+# ARG VARIANT="3"
 # FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
-FROM python:3.9-slim-buster
+ARG ARCH=
+FROM ${ARCH}python:3.9-slim-buster
 
 
 # set ENV for excellent ludeeus's scripts
@@ -12,9 +13,6 @@ ENV DEVCONTAINER=True
 
 # open ports
 EXPOSE 8123
-
-# Install Node.js
-ARG INSTALL_NODE="false"
 
 # install additional OS packages.
 RUN \
@@ -38,6 +36,7 @@ RUN \
     libpcap-dev \
     libssl-dev \
     make \
+    multiarch-support \
     musl-dev \
     nano \
     openssh-client \
@@ -61,10 +60,9 @@ COPY rootfs/common /
 # prepare copied files/folders/execute rights
 RUN \
   chmod +x /usr/bin/container \
-  && mkdir -p /config/custom_components \
+  && mkdir -p /config/custom_components
 
 # install Home Assistant DEV
 RUN \
-  container init
+  /usr/bin/container install
 
-# 

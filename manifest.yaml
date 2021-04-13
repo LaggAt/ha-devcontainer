@@ -1,0 +1,16 @@
+image: laggat/hacs-base-container:multiarch
+manifests:
+  - image: laggat/hacs-base-container:multiarch-amd64
+    platform:
+      architecture: amd64
+      os: linux
+
+  - image: laggat/hacs-base-container:multiarch-arm32
+    platform:
+      architecture: arm
+      os: linux
+
+  - image: laggat/hacs-base-container:multiarch-arm64
+    platform:
+      architecture: arm64
+      os: linux

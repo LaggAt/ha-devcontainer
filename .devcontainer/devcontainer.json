@@ -4,13 +4,7 @@
 	"name": "hacs-base-container",
 	"build": {
 		"dockerfile": "../Dockerfile",
-		"context": "..",
-		"args": { 
-			// Update 'VARIANT' to pick a Python version: 3, 3.6, 3.7, 3.8, 3.9
-			"VARIANT": "3.9",
-			// Options
-			"INSTALL_NODE": "false"
-		}
+		"context": ".."
 	},
 
 	// Set *default* container specific settings.json values on container create.
@@ -36,7 +30,7 @@
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	"forwardPorts": [8123],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "pip3 install --user -r requirements.txt",
