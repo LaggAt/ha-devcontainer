@@ -1,8 +1,13 @@
 black
 colorlog
 coveralls
+debugpy
 flake8
+pexpect
 pylint
+pygatt
+pylint
+PyNaCl
 pytest
 pytest-cov
 pytest-homeassistant-custom-component

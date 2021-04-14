@@ -49,7 +49,8 @@ RUN \
 
 # pip requirements
 COPY requirements.txt /tmp/pip-tmp/
-RUN pip3 --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
+RUN pip3 install --upgrade pip \
+  && pip3 --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
   && rm -rf /tmp/pip-tmp
 
 # Copy files
@@ -64,3 +65,11 @@ RUN \
 RUN \
   /usr/bin/container install
 
+# install hacs
+RUN \
+  mkdir -p /src/hacs \
+  && cd /src/hacs \
+  && mkdir -p /config/custom_components/hacs \
+  && wget https://github.com/hacs/integration/releases/latest/download/hacs.zip \
+  && unzip hacs.zip -d /config/custom_components/hacs \
+  && /bin/rm -rf /src/hacs

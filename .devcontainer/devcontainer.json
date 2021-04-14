@@ -1,13 +1,12 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.163.1/containers/python-3
 {
-	"name": "hacs-base-container",
-	"build": {
-		"dockerfile": "../Dockerfile",
-		"context": ".."
-	},
-
-	// Set *default* container specific settings.json values on container create.
+	"name": "hacs-dev-container-buildenv",
+	// "build": {
+	// 	"dockerfile": "../Dockerfile",
+	// 	"context": ".."
+	// },
+	"image": "debian:buster-slim",
+	
+	// // Set *default* container specific settings.json values on container create.
 	"settings": { 
 		"terminal.integrated.shell.linux": "/bin/bash",
 		"python.pythonPath": "/usr/local/bin/python",
@@ -24,17 +23,21 @@
 		"python.linting.pylintPath": "/usr/local/py-utils/bin/pylint"
 	},
 
-	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": [
-		"ms-python.python"
-	],
+	// // Add the IDs of extensions you want installed when the container is created.
+	// "extensions": [
+	// 	"ms-python.python"
+	// ],
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [8123],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "pip3 install --user -r requirements.txt",
+	"postCreateCommand": "/bin/chmod +x /workspaces/hacs-base-container/scripts/postCreateContainer.sh && /workspaces/hacs-base-container/scripts/postCreateContainer.sh",
 
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	// "remoteUser": "vscode"
+
+	"runArgs": [
+		"--name",
+		"hacs-dev-container-buildenv",
+		"--privileged",
+		"-v", 
+		"/var/run/docker.sock:/var/run/docker.sock"
+	]
 }
