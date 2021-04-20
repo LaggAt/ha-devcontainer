@@ -15,6 +15,7 @@ EXPOSE 8123
 # install additional OS packages.
 RUN \
   apt-get update && export DEBIAN_FRONTEND=noninteractive \
+  && apt-get upgrade -y \
   && apt-get -y install --no-install-recommends \
     bash \
     bluetooth \
@@ -23,6 +24,7 @@ RUN \
     build-essential \
     ca-certificates \
     cython \
+    docker.io \
     gcc \
     git \
     iputils-ping \
