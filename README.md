@@ -10,6 +10,13 @@ This is a container to develop a HACS/HASS integration. It features:
 * Home Assistant, HACS and some useful Extensions preinstalled
 * black, pytest, ...
 
+## Usage
+
+Latest container for AMD64, ARM and ARM64 is here:
+https://hub.docker.com/repository/docker/laggat/hacs-base-container
+
+TODO: Example project using the container remotely on a Raspberry PI 4 will follow.
+
 ## Contribute
 
 ### by donating a coffee or two:
