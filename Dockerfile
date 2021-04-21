@@ -1,5 +1,5 @@
 ARG BASE_IMAGE_PREFIX
-FROM ${BASE_IMAGE_PREFIX}python:3.9-slim-buster
+FROM ${BASE_IMAGE_PREFIX}python:3.8-slim-buster
 
 # see hooks/post_checkout
 ARG ARCH
@@ -15,7 +15,6 @@ EXPOSE 8123
 # install additional OS packages.
 RUN \
   apt-get update && export DEBIAN_FRONTEND=noninteractive \
-  && apt-get upgrade -y \
   && apt-get -y install --no-install-recommends \
     bash \
     bluetooth \
@@ -41,6 +40,7 @@ RUN \
     nano \
     openssh-client \
     procps rfkill \
+    
     unzip \
     vim \
     wget \
