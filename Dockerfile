@@ -27,6 +27,7 @@ RUN \
     gcc \
     git \
     iputils-ping \
+    jq \
     libatomic1 \
     libavcodec-dev \
     libc-dev \
