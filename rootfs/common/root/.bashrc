@@ -3,7 +3,7 @@ source /etc/bash_completion.d/container_completion
 source /usr/share/container/tools
 git config --global core.autocrlf input > /dev/null 2>&1
 
-export PS1="container# "
+#export PS1="container# "
 export DEVCONTAINER="True"
 export CONTAINER="True"
 

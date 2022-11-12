@@ -1,0 +1,4 @@
+TODO:
+
+Start Home Assistant command:
+    hass -c /config --debug

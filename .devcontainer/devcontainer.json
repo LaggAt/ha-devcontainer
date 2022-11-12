@@ -1,11 +1,13 @@
 {
 	"name": "hacs-dev-container-buildenv",
-	// "build": {
-	// 	"dockerfile": "../Dockerfile",
-	// 	"context": ".."
-	// },
-	"image": "debian:buster-slim",
-	
+	"build": {
+		"dockerfile": "../Dockerfile",
+		"context": ".."
+	},
+	//"image": "debian:buster-slim",
+	"appPort": [
+		"9123:8123"
+	],
 	// // Set *default* container specific settings.json values on container create.
 	"settings": { 
 		"terminal.integrated.shell.linux": "/bin/bash",
@@ -22,6 +24,8 @@
 		"python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
 		"python.linting.pylintPath": "/usr/local/py-utils/bin/pylint"
 	},
+	"remoteUser": "root",
+	"containerUser": "root",
 
 	// // Add the IDs of extensions you want installed when the container is created.
 	// "extensions": [
