@@ -1,4 +1,4 @@
-# hacs-base-container
+# ha-devcontainer
 
 > INCOMPLETE I'm working on this. Until I'm ready, this describes my wishes. INCOMPLETE
 
@@ -20,7 +20,7 @@ I have some concerns the Supervisor installer
 ## Usage
 
 Latest container for AMD64, ARM and ARM64 is here:
-https://hub.docker.com/repository/docker/laggat/hacs-base-container
+https://hub.docker.com/repository/docker/laggat/ha-devcontainer
 
 TODO: Example project using the container remotely on a Raspberry PI 4 will follow.
 

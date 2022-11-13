@@ -1,6 +1,3 @@
-# ARG BASE_IMAGE_PREFIX
-# FROM ${BASE_IMAGE_PREFIX}debian:stable-slim AS build
-
 # [Choice] Python version (use -bullseye variants on local arm64/Apple Silicon): 3, 3.10, 3.9, 3.8, 3.7, 3.6, 3-bullseye, 3.10-bullseye, 3.9-bullseye, 3.8-bullseye, 3.7-bullseye, 3.6-bullseye, 3-buster, 3.10-buster, 3.9-buster, 3.8-buster, 3.7-buster, 3.6-buster
 ARG VARIANT="3.10-bullseye"
 FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT} as build
@@ -9,24 +6,13 @@ FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT} as build
 ARG NODE_VERSION="none"
 RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
 
-# see hooks/post_checkout
-#ARG ARCH
-#COPY qemu-${ARCH}-static /usr/bin
-
-# configurations for this container
-#ENV PREFER_RESOLVER=IPv4
-
-# set ENV for excellent ludeeus's scripts
-#ENV CONTAINER_TYPE=integration
+# name of the dev supervisor container to not interfere with "hassio_supervisor"
+ENV SUPERVISOR_NAME=ha-devcontainer_supervisor
 ENV DEVCONTAINER=True
 ENV DEBIAN_FRONTEND=noninteractive
 
 # open ports
 EXPOSE 8123
-
-# prefer IPv4 over IPv6 name resolution
-# works after restart only, doesn't allow cloning from github :/
-#RUN if [ "$PREFER_IPv6_RESOLVER"=="IPv4" ] ; then sed -e 's/\#\(precedence ::ffff:0:0\/96  100\)/\1/g' -i /etc/gai.conf ; fi
 
 # install additional OS packages.
 RUN \

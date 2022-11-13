@@ -17,7 +17,7 @@ fi
 
 complete -W "\`grep -oE '^[a-zA-Z0-9_.-]+:([^=]|$)' ?akefile | sed 's/[^a-zA-Z0-9_.-]*$//'\`" make
 
-echo hacs-base-container <https://github.com/LaggAt/hacs-base-container>
+echo ha-devcontainer <https://github.com/LaggAt/ha-devcontainer>
 echo This is far from finished! Read the README.md for development state.
 echo
 echo TODO: show usage in a simple example integration, provide launch.json for vscode. 
