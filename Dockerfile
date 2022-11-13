@@ -71,6 +71,8 @@ RUN \
 RUN git clone https://github.com/home-assistant/devcontainer.git /tmp/devcontainer
 # set execute right on executables (files in bin folders)
 RUN find /tmp/devcontainer/ -iname bin | xargs chmod -R +x
+# use SUPERVISOR_NAME env variable:
+RUN find /tmp/devcontainer/ -type f -print0 |xargs -0 sed -i 's/hassio_supervisor/$SUPERVISOR_NAME/g'
 
 # COPY ./common/rootfs /
 # COPY ./common/rootfs_supervisor /
