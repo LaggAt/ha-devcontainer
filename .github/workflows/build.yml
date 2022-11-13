@@ -5,7 +5,7 @@ name: Build
 
 # Controls when the workflow will run
 on:
-  workflow_dispatch
+  workflow_dispatch:
   push:
     branches:
       - 'master'
