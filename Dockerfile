@@ -39,6 +39,7 @@ RUN \
     bluez-tools \
     build-essential \
     ca-certificates \
+    cargo \
     curl \
     cython3 \
     dbus \
@@ -49,7 +50,7 @@ RUN \
     jq \
     libatomic1 \
     libavcodec-dev \
-    libc-dev \
+    libc6-dev \
     libffi-dev \
     libglib2.0-bin \
     libjpeg-dev \
@@ -61,11 +62,14 @@ RUN \
     nano \
     network-manager \
     openssh-client \
-    procps rfkill \
+    procps \
+    python3 \
     python3-dev \
     python3-pip \
+    python3-setuptools \
     python3-venv \
     python3-wheel \
+    rfkill \
     systemd-journal-remote \
     udisks2 \
     unzip \
