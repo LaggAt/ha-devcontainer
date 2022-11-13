@@ -1,13 +1,13 @@
 {
-	"name": "hacs-dev-container-buildenv",
+	"name": "hacs-base-container",
 	"build": {
 		"dockerfile": "../Dockerfile",
 		"context": ".."
 	},
 	//"image": "debian:buster-slim",
-	"appPort": [
-		"9123:8123"
-	],
+	// "appPort": [
+	// 	"9123:8123"
+	// ],
 	// // Set *default* container specific settings.json values on container create.
 	"settings": { 
 		"terminal.integrated.shell.linux": "/bin/bash",
@@ -22,8 +22,9 @@
 		"python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
 		"python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
 		"python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
-		"python.linting.pylintPath": "/usr/local/py-utils/bin/pylint"
+		"python.linting.pylintPath": "/usr/local/py-utils/bin/pylint",
 	},
+
 	"remoteUser": "root",
 	"containerUser": "root",
 
@@ -39,9 +40,8 @@
 
 	"runArgs": [
 		"--name",
-		"hacs-dev-container-buildenv",
+		"hacs-base-container",
 		"--privileged",
-		"-v", 
-		"/var/run/docker.sock:/var/run/docker.sock"
+		"-v", "/var/run/docker.sock:/var/run/docker.sock"
 	]
 }

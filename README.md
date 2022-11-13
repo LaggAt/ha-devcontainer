@@ -2,13 +2,20 @@
 
 > INCOMPLETE I'm working on this. Until I'm ready, this describes my wishes. INCOMPLETE
 
-This is a container to develop a HACS/HASS integration. It features:
+This is a container to develop a HACS/HASS integration. It will feature:
 
-* Develop on a Remote Raspberry Pi4 (therefore developing with full debugging functionality in the same environment the integration will later probably run on)
+* Develop on a Remote Raspberry Pi4 x64 (to develop on the same platform running on later)
 * Bluetooth / BLE is working as in the live Home Assistant container
 * Live and Test system may be on the same system, and are separated (Test system uses TCP port 9123)
 * Home Assistant, HACS and some useful Extensions preinstalled
 * black, pytest, ...
+
+## Development progress
+
+For now I have a container which should be useable.
+It's based on [the official DevContainer for Addons](https://github.com/home-assistant/devcontainer/blob/main/addons/Dockerfile)
+but should also be usable in Raspbian 64bit. Until here I developed the container on Windows, seems I need to switch to the PI now.
+I have some concerns the Supervisor installer 
 
 ## Usage
 

@@ -1,4 +1,10 @@
-TODO:
+TODO (my notes, they may be confising for everybody else):
 
-Start Home Assistant command:
-    hass -c /config --debug
+# start Home Assistant
+    bash supervisor_run
+
+# running two Home Assistant installations on one Pi?
+
+Dev Container and main homeassistant container don't interfere as I can see.
+What about Supervisor Container? 
+We need to test that.
