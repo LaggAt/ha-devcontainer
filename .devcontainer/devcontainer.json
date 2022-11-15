@@ -25,15 +25,15 @@
 		"python.linting.pylintPath": "/usr/local/py-utils/bin/pylint",
 	},
 
-	"remoteUser": "root",
-	"containerUser": "root",
+	// "remoteUser": "root",
+	// "containerUser": "root",
 
 	// // Add the IDs of extensions you want installed when the container is created.
 	// "extensions": [
 	// 	"ms-python.python"
 	// ],
 
-	"postCreateCommand": "/bin/chmod +x /workspaces/ha-devcontainer/scripts/postCreateContainer.sh && /workspaces/ha-devcontainer/scripts/postCreateContainer.sh",
+	"postCreateCommand": "bash -x /workspaces/ha-devcontainer/scripts/postCreateContainer.sh",
 
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	// "remoteUser": "vscode"
