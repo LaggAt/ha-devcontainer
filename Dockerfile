@@ -1,22 +1,27 @@
 # [Choice] Python version (use -bullseye variants on local arm64/Apple Silicon): 3, 3.10, 3.9, 3.8, 3.7, 3.6, 3-bullseye, 3.10-bullseye, 3.9-bullseye, 3.8-bullseye, 3.7-bullseye, 3.6-bullseye, 3-buster, 3.10-buster, 3.9-buster, 3.8-buster, 3.7-buster, 3.6-buster
 ARG VARIANT="3.10-bullseye"
 FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT} as build
-# FROM mcr.microsoft.com/vscode/devcontainers/base:debian as build
 # [Choice] Node.js version: none, lts/*, 16, 14, 12, 10
 ARG NODE_VERSION="none"
 RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
 
-# name of the dev supervisor container to not interfere with "hassio_supervisor"
-ENV SUPERVISOR_NAME=ha-devcontainer_supervisor
+# run as root from now on
+USER root
+
+# Environment Variable defaults
 ENV DEVCONTAINER=True
 ENV DEBIAN_FRONTEND=noninteractive
 
 # open ports
 EXPOSE 8123
 
-# install additional OS packages.
+# ################## homeassistant core https://github.com/home-assistant/core/blob/dev/Dockerfile.dev
+# - extended by useful packages and tools
+
+# install packages (many more as in default home assistant, to save time later)
 RUN \
-  apt-get update && export DEBIAN_FRONTEND=noninteractive \
+  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+  && apt-get update \
   && apt-get -y install --no-install-recommends \
     apparmor \
     bash \
@@ -26,6 +31,7 @@ RUN \
     build-essential \
     ca-certificates \
     cargo \
+    cmake \
     curl \
     cython3 \
     dbus \
@@ -36,13 +42,23 @@ RUN \
     jq \
     libatomic1 \
     libavcodec-dev \
+    libavfilter-dev \
+    libavformat-dev \
+    libavdevice-dev \
+    libavutil-dev \
     libc6-dev \
     libffi-dev \
     libglib2.0-bin \
     libjpeg-dev \
     libpcap-dev \
     libpulse0 \
+    libturbojpeg0 \
+    libudev-dev \
     libssl-dev \
+    libswscale-dev \
+    libswresample-dev \
+    libxml2 \
+    libyaml-dev \
     make \
     musl-dev \
     nano \
@@ -63,36 +79,61 @@ RUN \
     wget \
     xz-utils \
     zlib1g-dev \ 
+  && apt-get clean \
   && rm -fr /var/lib/apt/lists/* \ 
   && find /usr/local \( -type d -a -name test -o -name tests -o -name '__pycache__' \) -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) -exec rm -rf '{}' \; \ 
   && rm -fr /tmp/* /var/{cache,log}/*
 
-# taken from devcontainer image: https://github.com/home-assistant/devcontainer/blob/main/addons/Dockerfile
-RUN git clone https://github.com/home-assistant/devcontainer.git /tmp/devcontainer
-# set execute right on executables (files in bin folders)
-RUN find /tmp/devcontainer/ -type d -iname bin | xargs chmod -R +x
-# use SUPERVISOR_NAME env variable:
-RUN find /tmp/devcontainer/ -type f -print0 | xargs -0 sed -i 's/hassio_supervisor/$SUPERVISOR_NAME/g'
-
-# COPY ./common/rootfs /
-# COPY ./common/rootfs_supervisor /
-# COPY ./common/install /tmp/common/install
-RUN cp -R /tmp/devcontainer/common/rootfs/* / \
-  && cp -R /tmp/devcontainer/common/rootfs_supervisor/* / \
-  && mkdir -p /tmp/common/install \
-  && cp -R /tmp/devcontainer/common/install/* /tmp/common/install
-
-# Install common
+# get and install hass-release
 RUN \
-    bash devcontainer_init \
-    && common_install_packages \
-        docker \
-        shellcheck \
-        cas \
-        os-agent
+  cd /usr/src \
+  && git clone --depth 1 https://github.com/home-assistant/hass-release \
+  && pip3 install -e hass-release/
 
-# COPY ./addons/rootfs /
-RUN cp -R /tmp/devcontainer/addons/rootfs/* /
+# Install Python dependencies from requirements
+#COPY requirements.txt ./
+#COPY homeassistant/package_constraints.txt homeassistant/package_constraints.txt
+#COPY requirements_test.txt requirements_test_pre_commit.txt ./
+RUN \
+  mkdir /p /tmp/requirements \
+  && cd /p /tmp/requirements \
+  && /usr/bin/wget \
+    https://raw.githubusercontent.com/home-assistant/core/dev/requirements.txt \
+    https://raw.githubusercontent.com/home-assistant/core/dev/requirements_test.txt \
+  && pip3 install -r requirements.txt --use-deprecated=legacy-resolver \
+  && pip3 install -r requirements_test.txt --use-deprecated=legacy-resolver
+
+# ################## END homeassistant core https://github.com/home-assistant/core/blob/dev/Dockerfile.dev
+
+
+
+
+# # taken from devcontainer image: https://github.com/home-assistant/devcontainer/blob/main/addons/Dockerfile
+# RUN git clone https://github.com/home-assistant/devcontainer.git /tmp/devcontainer
+# # set execute right on executables (files in bin folders)
+# RUN find /tmp/devcontainer/ -type d -iname bin | xargs chmod -R +x
+# # use SUPERVISOR_NAME env variable:
+# RUN find /tmp/devcontainer/ -type f -print0 | xargs -0 sed -i 's/hassio_supervisor/$SUPERVISOR_NAME/g'
+
+# # COPY ./common/rootfs /
+# # COPY ./common/rootfs_supervisor /
+# # COPY ./common/install /tmp/common/install
+# RUN cp -R /tmp/devcontainer/common/rootfs/* / \
+#   && cp -R /tmp/devcontainer/common/rootfs_supervisor/* / \
+#   && mkdir -p /tmp/common/install \
+#   && cp -R /tmp/devcontainer/common/install/* /tmp/common/install
+
+# # Install common
+# RUN \
+#     bash devcontainer_init \
+#     && common_install_packages \
+#         docker \
+#         shellcheck \
+#         cas \
+#         os-agent
+
+# # COPY ./addons/rootfs /
+# RUN cp -R /tmp/devcontainer/addons/rootfs/* /
 
 
 #### from here on some scripts I have been fiddling with before. Kept until we have something working.
