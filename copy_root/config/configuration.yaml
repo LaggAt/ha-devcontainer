@@ -1,6 +1,6 @@
 default_config:
 
-# allow debugging from vscode:
+# allow debugging from vscode on port 5678:
 debugpy:
 
 # configure logging / you may want to have a higher loglevel for your integration
