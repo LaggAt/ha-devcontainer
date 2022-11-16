@@ -15,6 +15,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 # open ports
 EXPOSE 8123
 
+# deploy ha-devcontainer commands, scripts, home assistant basic config, ...
+COPY copy_root/ /
+
 # ################## homeassistant core https://github.com/home-assistant/core/blob/dev/Dockerfile.dev
 # - extended by useful packages and tools
 
