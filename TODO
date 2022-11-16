@@ -1,10 +1,10 @@
 TODO (my notes, they may be confising for everybody else):
 
-# start Home Assistant
-    bash supervisor_run
+change copy_root/* to your scripts
 
-# running two Home Assistant installations on one Pi?
+# run HA
+/usr/local/bin/hass --config /config --ignore-os-check --debug --verbose
 
-Dev Container and main homeassistant container don't interfere as I can see.
-What about Supervisor Container? 
-We need to test that.
+# scripts
+## see available scripts here: https://github.com/home-assistant/core/tree/dev/homeassistant/scripts
+/usr/local/bin/hass --config /config --script 

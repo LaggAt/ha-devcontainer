@@ -110,7 +110,13 @@ RUN \
 
 # ################## END homeassistant core https://github.com/home-assistant/core/blob/dev/Dockerfile.dev
 
+#install home assistant itself
+RUN pip install homeassistant
 
+#create user admin/admin (does this avoid the bootstrap?)
+RUN /usr/local/bin/hass --config /config --script auth add admin admin
+#check config (and download all further necessary packages)
+RUN /usr/local/bin/hass --config /config --script check_config
 
 
 # # taken from devcontainer image: https://github.com/home-assistant/devcontainer/blob/main/addons/Dockerfile

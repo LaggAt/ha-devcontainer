@@ -1,0 +1,10 @@
+default_config:
+
+# allow debugging from vscode:
+debugpy:
+
+# configure logging / you may want to have a higher loglevel for your integration
+logger:
+  default: info
+  logs:
+    homeassistant.components.cloud: debug
