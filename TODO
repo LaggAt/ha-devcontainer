@@ -3,8 +3,22 @@ TODO (my notes, they may be confising for everybody else):
 change copy_root/* to your scripts
 
 # run HA
-/usr/local/bin/hass --config /config --ignore-os-check --debug --verbose
+/usr/local/bin/hass --config /config --ignore-os-check --verbose
 
 # scripts
 ## see available scripts here: https://github.com/home-assistant/core/tree/dev/homeassistant/scripts
 /usr/local/bin/hass --config /config --script 
+
+
+
+## so we could start hass and get it's process ID
+/usr/local/bin/hass --config /config --ignore-os-check --verbose
+echo $!
+30031
+
+##when this is written to console and log, we are running and all requirements are installed:
+INFO (MainThread) [homeassistant.bootstrap] Home Assistant initialized in 764.25s
+INFO (MainThread) [homeassistant.core] Starting Home Assistant
+
+## then we can send a sigterm to end it.
+/bin/kill 22847

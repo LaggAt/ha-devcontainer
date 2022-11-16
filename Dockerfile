@@ -15,9 +15,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 # open ports
 EXPOSE 8123
 
-# deploy ha-devcontainer commands, scripts, home assistant basic config, ...
-COPY copy_root/ /
-
 # ################## homeassistant core https://github.com/home-assistant/core/blob/dev/Dockerfile.dev
 # - extended by useful packages and tools
 
@@ -87,6 +84,12 @@ RUN \
   && find /usr/local \( -type d -a -name test -o -name tests -o -name '__pycache__' \) -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) -exec rm -rf '{}' \; \ 
   && rm -fr /tmp/* /var/{cache,log}/*
 
+# deploy ha-devcontainer commands, scripts, home assistant basic config, ...
+COPY copy_root/ /
+# 'dev' cli
+RUN cd /opt/dev \
+  && pip install --editable .
+
 # get and install hass-release
 RUN \
   cd /usr/src \
@@ -120,6 +123,13 @@ RUN pip install homeassistant
 # RUN /usr/local/bin/hass --config /config --script auth add admin admin
 #check config (and download all further necessary packages)
 RUN /usr/local/bin/hass --config /config --script check_config
+
+#TODO Run and Stop home assistant when onboading dialog is shown
+#TODO later: also automate/skip onboarding 
+
+RUN \
+  ###### /usr/local/bin/hass --config /config --ignore-os-check --verbose
+
 
 
 # # taken from devcontainer image: https://github.com/home-assistant/devcontainer/blob/main/addons/Dockerfile
