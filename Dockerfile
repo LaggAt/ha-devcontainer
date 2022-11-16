@@ -95,13 +95,18 @@ RUN \
 #COPY homeassistant/package_constraints.txt homeassistant/package_constraints.txt
 #COPY requirements_test.txt requirements_test_pre_commit.txt ./
 RUN \
-  mkdir /p /tmp/requirements \
-  && cd /p /tmp/requirements \
+  mkdir -p /tmp/requirements/homeassistant \
+  && cd /tmp/requirements/homeassistant \
+  && /usr/bin/wget \
+    https://raw.githubusercontent.com/home-assistant/core/dev/homeassistant/package_constraints.txt \
+  && cd /tmp/requirements \
   && /usr/bin/wget \
     https://raw.githubusercontent.com/home-assistant/core/dev/requirements.txt \
     https://raw.githubusercontent.com/home-assistant/core/dev/requirements_test.txt \
+    https://raw.githubusercontent.com/home-assistant/core/dev/requirements_test_pre_commit.txt \
   && pip3 install -r requirements.txt --use-deprecated=legacy-resolver \
-  && pip3 install -r requirements_test.txt --use-deprecated=legacy-resolver
+  && pip3 install -r requirements_test.txt --use-deprecated=legacy-resolver \
+  && rm -rf /tmp/requirements
 
 # ################## END homeassistant core https://github.com/home-assistant/core/blob/dev/Dockerfile.dev
 

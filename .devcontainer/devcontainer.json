@@ -25,8 +25,9 @@
 		"python.linting.pylintPath": "/usr/local/py-utils/bin/pylint",
 	},
 
-	// "remoteUser": "root",
-	// "containerUser": "root",
+	// set user to root to avoid Permission denied issues
+	"remoteUser": "root",
+	"containerUser": "root",
 
 	// // Add the IDs of extensions you want installed when the container is created.
 	// "extensions": [
