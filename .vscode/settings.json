@@ -1,5 +1,7 @@
 {
     "licenser.projectName": "ha-devcontainer",
     "licenser.license": "MIT",
-    "licenser.author": "Florian Lagg"
+    "licenser.author": "Florian Lagg",
+
+    "files.eol": "\n",
 }
