@@ -13,7 +13,10 @@ ENV DEVCONTAINER=True
 ENV DEBIAN_FRONTEND=noninteractive
 
 # open ports
+## hass
 EXPOSE 8123
+## python remote debugger
+EXPOSE 5678
 
 # ################## homeassistant core https://github.com/home-assistant/core/blob/dev/Dockerfile.dev
 # - extended by useful packages and tools
@@ -124,11 +127,12 @@ RUN pip install homeassistant
 #check config (and download all further necessary packages)
 RUN /usr/local/bin/hass --config /config --script check_config
 
-#TODO Run and Stop home assistant when onboading dialog is shown
+# Run and Stop home assistant when onboading dialog is shown
+RUN /usr/local/bin/dev ha start --stop-on-init=true
+
 #TODO later: also automate/skip onboarding 
 
-RUN \
-  ###### /usr/local/bin/hass --config /config --ignore-os-check --verbose
+
 
 
 
