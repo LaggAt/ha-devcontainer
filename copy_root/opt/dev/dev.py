@@ -52,4 +52,6 @@ def start(stop_on_init: bool):
     if stop_on_init:
         click.echo("Sending SIGTERM to HA.")
         _stop_process(p)
+        # we are OK with stopping HA, so ignore exit code.
+        sys.exit(0)
     sys.exit(p.returncode)
