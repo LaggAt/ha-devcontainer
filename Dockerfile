@@ -25,7 +25,7 @@ EXPOSE 5678
 RUN \
   curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
   && apt-get update \
-  && apt-get -y install --no-install-recommends \
+  && apt-get -y install \
     apparmor \
     bash \
     bluetooth \
@@ -42,6 +42,7 @@ RUN \
     gcc \
     git \
     iputils-ping \
+    ipython3 \
     jq \
     libatomic1 \
     libavcodec-dev \

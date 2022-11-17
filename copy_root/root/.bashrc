@@ -13,6 +13,9 @@ if test -d "/tmp/.ssh"; then
     chmod 600 /root/.ssh/id_rsa > /dev/null 2>&1
 fi
 
+#'dev' cli autocompletion for bash
+eval "$(_FOO_BAR_COMPLETE=source_bash dev)"
+
 complete -W "\`grep -oE '^[a-zA-Z0-9_.-]+:([^=]|$)' ?akefile | sed 's/[^a-zA-Z0-9_.-]*$//'\`" make
 
 echo ha-devcontainer <https://github.com/LaggAt/ha-devcontainer>
