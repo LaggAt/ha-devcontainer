@@ -118,6 +118,7 @@ def start(install_deps_only: bool):
     cnt_dep_err = 0
     if install_deps_only:
         def cb_count_dep_errors(run: 'Run', out: str, err: bool):
+            nonlocal cnt_dep_err
             if "ModuleNotFoundError" in out:
                 cnt_dep_err += 1
         def cb_exit_condition(run: 'Run', out: str, err: bool):
