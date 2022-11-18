@@ -134,6 +134,6 @@ RUN cd /config \
 RUN /usr/local/bin/hass --config /config --script check_config
 
 # Run and Stop home assistant when onboading dialog is shown
-RUN /usr/local/bin/dev ha start --install-deps-only=true
+RUN /usr/local/bin/dev ha start --install-deps-only
 
 #TODO later: also automate/skip onboarding 
