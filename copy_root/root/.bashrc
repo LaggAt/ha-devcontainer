@@ -14,12 +14,12 @@ if test -d "/tmp/.ssh"; then
 fi
 
 #'dev' cli autocompletion for bash
-eval "$(_FOO_BAR_COMPLETE=source_bash dev)"
+eval "$(_DEV_COMPLETE=source_bash dev)"
 
 complete -W "\`grep -oE '^[a-zA-Z0-9_.-]+:([^=]|$)' ?akefile | sed 's/[^a-zA-Z0-9_.-]*$//'\`" make
 
-echo ha-devcontainer <https://github.com/LaggAt/ha-devcontainer>
+echo https://github.com/LaggAt/ha-devcontainer
 echo This is far from finished! Read the README.md for development state.
 echo
-echo TODO: show usage in a simple example integration, provide launch.json for vscode.
+echo Start by typing: dev --help
 echo
