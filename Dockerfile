@@ -18,9 +18,6 @@ EXPOSE 8123
 ## python remote debugger
 EXPOSE 5678
 
-# ################## homeassistant core https://github.com/home-assistant/core/blob/dev/Dockerfile.dev
-# - extended by useful packages and tools
-
 # install packages (many more as in default home assistant, to save time later)
 RUN \
   curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
@@ -94,34 +91,56 @@ COPY copy_root/ /
 RUN cd /opt/dev \
   && pip install --editable .
 
-# get and install hass-release
+
+
+
+#*1) prepare source to copy from for home-assistant/core
+WORKDIR /tmp
+RUN git clone https://github.com/home-assistant/core.git
+# Add Home Assistant wheels repository
+#ENV WHEELS_LINKS=https://wheels.home-assistant.io/musllinux/
+
+#*1 from here on, COPY RELATIVE_PATH should get: RUN cp -rf /tmp/core/RELATIVE_PATH
+#   used for https://github.com/home-assistant/core/blob/dev/Dockerfile below
+WORKDIR /usr/src
+RUN mkdir -p homeassistant/homeassistant
+#*2 removed this from all pip install commands (without single quotes):
+#   ' --no-cache-dir --no-index --only-binary=:all: --find-links "${WHEELS_LINKS}"''
+#*3 removed ' home_assistant_frontend-*' from the COPY, as the folder/file is not existant in core git.
+
+##### START dependencies from https://github.com/home-assistant/core/blob/dev/Dockerfile
+# Synchronize with homeassistant/core.py:async_stop
+ENV \
+    S6_SERVICES_GRACETIME=220000
+
+## Setup Home Assistant Core dependencies
+RUN cp -rf /tmp/core/requirements.txt homeassistant/
+RUN cp -rf /tmp/core/homeassistant/package_constraints.txt homeassistant/homeassistant/
 RUN \
-  cd /usr/src \
-  && git clone --depth 1 https://github.com/home-assistant/hass-release \
-  && pip3 install -e hass-release/
-
-# Install Python dependencies from requirements
-#COPY requirements.txt ./
-#COPY homeassistant/package_constraints.txt homeassistant/package_constraints.txt
-#COPY requirements_test.txt requirements_test_pre_commit.txt ./
+    pip3 install \
+    -r homeassistant/requirements.txt --use-deprecated=legacy-resolver
+RUN cp -rf /tmp/core/requirements_all.txt homeassistant/
 RUN \
-  mkdir -p /tmp/requirements/homeassistant \
-  && cd /tmp/requirements/homeassistant \
-  && /usr/bin/wget \
-    https://raw.githubusercontent.com/home-assistant/core/dev/homeassistant/package_constraints.txt \
-  && cd /tmp/requirements \
-  && /usr/bin/wget \
-    https://raw.githubusercontent.com/home-assistant/core/dev/requirements.txt \
-    https://raw.githubusercontent.com/home-assistant/core/dev/requirements_test.txt \
-    https://raw.githubusercontent.com/home-assistant/core/dev/requirements_test_pre_commit.txt \
-  && pip3 install -r requirements.txt --use-deprecated=legacy-resolver \
-  && pip3 install -r requirements_test.txt --use-deprecated=legacy-resolver \
-  && rm -rf /tmp/requirements
+    if ls homeassistant/home_assistant_frontend*.whl 1> /dev/null 2>&1; then \
+        pip3 install --no-cache-dir --no-index homeassistant/home_assistant_frontend-*.whl; \
+    fi \
+    && pip3 install \
+    -r homeassistant/requirements_all.txt --use-deprecated=legacy-resolver
 
-# ################## END homeassistant core https://github.com/home-assistant/core/blob/dev/Dockerfile.dev
+## Setup Home Assistant Core
+RUN cp -rf /tmp/core/. homeassistant/
+RUN \
+    pip3 install \
+    -e ./homeassistant --use-deprecated=legacy-resolver \
+    && python3 -m compileall homeassistant/homeassistant
 
-#install home assistant itself
-RUN pip install homeassistant
+# Home Assistant S6-Overlay
+RUN cp -rf /tmp/core/rootfs /
+
+##### END dependencies from https://github.com/home-assistant/core/blob/dev/Dockerfile
+
+# #install home assistant itself
+# RUN pip install homeassistant
 
 #prepare hacs
 RUN cd /config \
@@ -136,4 +155,4 @@ RUN /usr/local/bin/hass --config /config --script check_config
 # Run and Stop home assistant when onboading dialog is shown
 RUN /usr/local/bin/dev ha start --install-deps-only
 
-#TODO later: also automate/skip onboarding 
+#TODO later: also automate/skip onboarding
