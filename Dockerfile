@@ -123,91 +123,17 @@ RUN \
 #install home assistant itself
 RUN pip install homeassistant
 
+#prepare hacs
+RUN cd /config \
+  && mkdir -p /config/custom_components \
+  && wget -O - https://get.hacs.xyz | bash -
+
 # #create user admin/admin (does not avoid bootstap dialogs)
 # RUN /usr/local/bin/hass --config /config --script auth add admin admin
 #check config (and download all further necessary packages)
 RUN /usr/local/bin/hass --config /config --script check_config
 
 # Run and Stop home assistant when onboading dialog is shown
-RUN /usr/local/bin/dev ha start --stop-on-init=true
+RUN /usr/local/bin/dev ha start --install-deps-only=true
 
 #TODO later: also automate/skip onboarding 
-
-
-
-
-
-# # taken from devcontainer image: https://github.com/home-assistant/devcontainer/blob/main/addons/Dockerfile
-# RUN git clone https://github.com/home-assistant/devcontainer.git /tmp/devcontainer
-# # set execute right on executables (files in bin folders)
-# RUN find /tmp/devcontainer/ -type d -iname bin | xargs chmod -R +x
-# # use SUPERVISOR_NAME env variable:
-# RUN find /tmp/devcontainer/ -type f -print0 | xargs -0 sed -i 's/hassio_supervisor/$SUPERVISOR_NAME/g'
-
-# # COPY ./common/rootfs /
-# # COPY ./common/rootfs_supervisor /
-# # COPY ./common/install /tmp/common/install
-# RUN cp -R /tmp/devcontainer/common/rootfs/* / \
-#   && cp -R /tmp/devcontainer/common/rootfs_supervisor/* / \
-#   && mkdir -p /tmp/common/install \
-#   && cp -R /tmp/devcontainer/common/install/* /tmp/common/install
-
-# # Install common
-# RUN \
-#     bash devcontainer_init \
-#     && common_install_packages \
-#         docker \
-#         shellcheck \
-#         cas \
-#         os-agent
-
-# # COPY ./addons/rootfs /
-# RUN cp -R /tmp/devcontainer/addons/rootfs/* /
-
-
-#### from here on some scripts I have been fiddling with before. Kept until we have something working.
-
-### Superviced installer (Add-On Menu)
-# # install docker-ce
-# RUN curl -fsSL get.docker.com | sh
-# # # install OS agent
-# RUN service dbus start \
-#   && export ARCH=$(dpkg --print-architecture | sed 's/^amd64$/x86_64/g') \
-#   && wget https://github.com/home-assistant/os-agent/releases/download/1.4.1/os-agent_1.4.1_linux_$ARCH.deb \
-#   && sudo dpkg -i os-agent_1.4.1_linux_$ARCH.deb
-# # install home assistant supervised package 
-# RUN wget https://github.com/home-assistant/supervised-installer/releases/latest/download/homeassistant-supervised.deb \
-#   && dpkg -i homeassistant-supervised.deb
-
-# # pip requirements
-# COPY requirements.txt /tmp/pip-tmp/
-# RUN pip install --upgrade pip \
-#   && pip --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
-#   && rm -rf /tmp/pip-tmp
-# # # Copy files
-# COPY rootfs/common /
-# ##TODO: add my own scripts!
-
-# # # prepare copied files/folders/execute rights
-# # RUN \
-# #   chmod +x /usr/bin/container \
-# #   && mkdir -p /config/custom_components
-# # install Home Assistant and install requirements
-# RUN \
-#   pip3 install homeassistant homeassistant-cli
-# # create config and install prequisites
-# RUN \
-#   hass -c /config --script ensure_config \
-#   && hass -c /config --script ensure_config
-
-# # install hacs
-# # RUN \
-# #   mkdir -p /src/hacs \
-# #   && cd /src/hacs \
-# #   && mkdir -p /config/custom_components/hacs \
-# #   && wget https://github.com/hacs/integration/releases/latest/download/hacs.zip \
-# #   && unzip hacs.zip -d /config/custom_components/hacs \
-# #   && /bin/rm -rf /src/hacs
-# RUN cd /config \
-#   && mkdir -p /config/custom_components \
-#   && wget -O - https://get.hacs.xyz | bash -

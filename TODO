@@ -1,24 +1,19 @@
 TODO (my notes, they may be confising for everybody else):
 
-change copy_root/* to your scripts
+# Bug: /usr/local/bin/dev ha start
+does not stop when ha is finished (still waits for new output lines)
 
-# run HA
-/usr/local/bin/hass --config /config --ignore-os-check --verbose
-
-# scripts
-## see available scripts here: https://github.com/home-assistant/core/tree/dev/homeassistant/scripts
-/usr/local/bin/hass --config /config --script 
+# Dockerfile, calling HA during build has ModuleNotFoundError
+## fail when there are errors (count Traceback lines?)
 
 
-
-## so we could start hass and get it's process ID
-/usr/local/bin/hass --config /config --ignore-os-check --verbose
-echo $!
-30031
-
-##when this is written to console and log, we are running and all requirements are installed:
-INFO (MainThread) [homeassistant.bootstrap] Home Assistant initialized in 764.25s
-INFO (MainThread) [homeassistant.core] Starting Home Assistant
-
-## then we can send a sigterm to end it.
-/bin/kill 22847
+#18 7.035 Traceback (most recent call last):
+#18 7.035   File "/usr/local/lib/python3.9/site-packages/homeassistant/setup.py", line 235, in _async_setup_component
+#18 7.035     result = await task
+#18 7.035   File "/usr/local/lib/python3.9/site-packages/homeassistant/components/http/__init__.py", line 185, in async_setup
+#18 7.035     await server.async_initialize(
+#18 7.035   File "/usr/local/lib/python3.9/site-packages/homeassistant/components/http/__init__.py", line 274, in async_initialize
+#18 7.035     setup_cors(self.app, cors_origins)
+#18 7.036   File "/usr/local/lib/python3.9/site-packages/homeassistant/components/http/cors.py", line 35, in setup_cors
+#18 7.036     import aiohttp_cors
+#18 7.036 ModuleNotFoundError: No module named 'aiohttp_cors'
