@@ -10,7 +10,19 @@
 	// ],
 	// // Set *default* container specific settings.json values on container create.
 	"settings": { 
-		"terminal.integrated.shell.linux": "/bin/bash",
+		"licenser.projectName": "ha-devcontainer",
+		"licenser.license": "MIT",
+		"licenser.author": "Florian Lagg",
+	
+		//linux line breaks
+		"files.eol": "\n",
+		//prefer ZSH shell
+		"terminal.integrated.profiles.linux": {
+			"zsh": {
+				"path": "/usr/bin/zsh"
+			}
+		},
+		"terminal.integrated.defaultProfile.linux": "zsh",
 		"python.pythonPath": "/usr/local/bin/python",
 		"python.linting.enabled": true,
 		"python.linting.pylintEnabled": true,

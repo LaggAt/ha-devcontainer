@@ -7,11 +7,12 @@ import click
 import fnmatch
 import json
 import os
+import signal
 import subprocess
 import sys
 import threading
 import time
-from typing import Callable, List
+from typing import Callable, List, Union
 
 CMD_HA = ["/usr/local/bin/hass", "--config", "/config", "--ignore-os-check", "--verbose"]
 #CMD_HA = ["/bin/ping", "1.1.1.1"]
@@ -99,6 +100,18 @@ def _get_matching_files(folder: str, file_pattern: str):
                 matching_files.append(fn)
     return matching_files
 
+def _get_running_ha_pid() -> List[int]:
+    """Get PID of running Home Asssitant, if any."""
+    pid_lst = []
+    try:
+        pid_str_lst = subprocess.check_output(["/usr/bin/pgrep", "-f", "\/usr\/local\/bin\/hass"])
+        for pid_str in pid_str_lst.split():
+            pid_lst.append(int(pid_str))
+    except subprocess.CalledProcessError:
+        pass
+    # HA not running
+    return pid_lst
+
 @click.group()
 def cli():
     pass
@@ -109,8 +122,21 @@ def ha():
 
 @ha.command()
 @click.option("--install-deps-only", is_flag=True, help="Start HA, download dependencies, then stop.")
-def start(install_deps_only: bool):
+@click.option("--restart", is_flag=True, help="Restart a running HA process, if any.")
+def start(install_deps_only: bool, restart: bool):
     """Run Home Assistant."""
+    
+    running_ha_pid_lst = _get_running_ha_pid()
+    if running_ha_pid_lst:
+        pids_str = ', '.join(str(pid) for pid in running_ha_pid_lst)
+        if restart:
+            click.echo(f"Sending TERMINATE Signal to Home Assistant at PID {pids_str}")
+            for pid in running_ha_pid_lst:
+                os.kill(pid, signal.SIGTERM)
+        else:
+            click.echo(f"Home Assistant already running with PID {pids_str}. Run with '--restart' if you want to terminate and restart it.")
+            sys.exit(1)
+        
     
     r = Run(CMD_HA) \
         .do_echo_output()
@@ -177,6 +203,7 @@ def activate(all: bool, domains: List[str]):
                     click.echo(f"'{domain}' for '{target}' activated")
                     os.symlink(source, target)
                 
-# # debug
+# # for debugging: REMOVE THIS WHEN FINISHED
 # if __name__ == '__main__':
-#     cli(["ha", "start", "--install-deps-only"])
+#     # parameters you want to debug:
+#     cli(["ha", "start", "--restart"])
