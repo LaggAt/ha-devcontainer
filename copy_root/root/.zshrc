@@ -102,6 +102,9 @@ source $ZSH/oh-my-zsh.sh
 DISABLE_AUTO_UPDATE=true
 DISABLE_UPDATE_PROMPT=true
 
+# allow 'rm ... *' without asking
+setopt rmstarsilent
+
 #'dev' cli autocompletion for bash
 eval "$(_DEV_COMPLETE=zsh_source dev)"
 

@@ -156,3 +156,8 @@ RUN /usr/local/bin/hass --config /config --script check_config
 RUN /usr/local/bin/dev ha start --install-deps-only
 
 #TODO later: also automate/skip onboarding
+
+
+# Cleanup
+RUN \
+  rm -rf /root/.cache/* /tmp/* /usr/src/homeassistant 
