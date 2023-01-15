@@ -1,0 +1,7 @@
+TODO/Notes for ha-container
+
+# reduce size of each layer!
+# add 'ha' cli tool, which is able to control HA-API:
+    ha authentication reset --username "JohnDoe" --password "123SuperSecret!"
+# 'ha' is called in /usr/bin/ha on the host, we could call hassio_cli ha inside our devcontainer:
+  --> docker exec hassio_cli ha $*
