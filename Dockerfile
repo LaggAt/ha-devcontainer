@@ -19,77 +19,76 @@ EXPOSE 8123
 EXPOSE 5678
 
 # install packages (many more as in default home assistant, to save time later)
-RUN \
-  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-  && apt-get update \
-  && apt-get -y install \
-    apparmor \
-    bash \
-    bluetooth \
-    bluez \
-    bluez-tools \
-    build-essential \
-    ca-certificates \
-    cargo \
-    cmake \
-    curl \
-    cython3 \
-    dbus \
-    docker.io \
-    gcc \
-    git \
-    iputils-ping \
-    ipython3 \
-    jq \
-    libatomic1 \
-    libavcodec-dev \
-    libavfilter-dev \
-    libavformat-dev \
-    libavdevice-dev \
-    libavutil-dev \
-    libc6-dev \
-    libffi-dev \
-    libglib2.0-bin \
-    libjpeg-dev \
-    libpcap-dev \
-    libpulse0 \
-    libturbojpeg0 \
-    libudev-dev \
-    libssl-dev \
-    libswscale-dev \
-    libswresample-dev \
-    libxml2 \
-    libyaml-dev \
-    make \
-    musl-dev \
-    nano \
-    network-manager \
-    openssh-client \
-    procps \
-    python3 \
-    python3-dev \
-    python3-pip \
-    python3-setuptools \
-    python3-venv \
-    python3-wheel \
-    rfkill \
-    systemd-journal-remote \
-    udisks2 \
-    unzip \
-    vim \
-    wget \
-    xz-utils \
-    zlib1g-dev \ 
-  && apt-get clean \
-  && rm -fr /var/lib/apt/lists/* \ 
-  && find /usr/local \( -type d -a -name test -o -name tests -o -name '__pycache__' \) -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) -exec rm -rf '{}' \; \ 
-  && rm -fr /tmp/* /var/{cache,log}/*
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+    && apt-get update \
+    && apt-get -y --no-install-recommends install \
+		apparmor \
+		bash \
+		bluetooth \
+		bluez \
+		bluez-tools \
+		build-essential \
+		ca-certificates \
+		cargo \
+		cmake \
+		curl \
+		cython3 \
+		dbus \
+		docker.io \
+		gcc \
+		git \
+		iputils-ping \
+		ipython3 \
+		jq \
+		libatomic1 \
+		libavcodec-dev \
+		libavfilter-dev \
+		libavformat-dev \
+		libavdevice-dev \
+		libavutil-dev \
+		libc6-dev \
+		libffi-dev \
+		libglib2.0-bin \
+		libjpeg-dev \
+		libpcap-dev \
+		libpulse0 \
+		libturbojpeg0 \
+		libudev-dev \
+		libssl-dev \
+		libswscale-dev \
+		libswresample-dev \
+		libxml2 \
+		libyaml-dev \
+		make \
+		musl-dev \
+		nano \
+		network-manager \
+		openssh-client \
+		procps \
+		python3 \
+		python3-dev \
+		python3-pip \
+		python3-setuptools \
+		python3-venv \
+		python3-wheel \
+		rfkill \
+		systemd-journal-remote \
+		udisks2 \
+		unzip \
+		vim \
+		wget \
+		xz-utils \
+		zlib1g-dev \ 
+    && apt-get clean \
+    && rm -fr /var/lib/apt/lists/* \ 
+    && find /usr/local \( -type d -a -name test -o -name tests -o -name '__pycache__' \) -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) -exec rm -rf '{}' \; \ 
+    && rm -fr /tmp/* /var/{cache,log}/*
 
 # deploy ha-devcontainer commands, scripts, home assistant basic config, ...
 COPY copy_root/ /
 # 'dev' cli
 RUN cd /opt/dev \
-  && pip install --editable .
+    && pip install --editable .
 
 
 
@@ -113,39 +112,33 @@ RUN mkdir -p homeassistant/homeassistant
 ENV \
     S6_SERVICES_GRACETIME=220000
 
-## Setup Home Assistant Core dependencies
-RUN cp -rf /tmp/core/requirements.txt homeassistant/
-RUN cp -rf /tmp/core/homeassistant/package_constraints.txt homeassistant/homeassistant/
-RUN \
-    pip3 install \
-    -r homeassistant/requirements.txt --use-deprecated=legacy-resolver
-RUN cp -rf /tmp/core/requirements_all.txt homeassistant/
-RUN \
-    if ls homeassistant/home_assistant_frontend*.whl 1> /dev/null 2>&1; then \
+## Setup Home Assistant Core and dependencies
+RUN cp -rf /tmp/core/requirements.txt homeassistant/ \
+    && cp -rf /tmp/core/homeassistant/package_constraints.txt homeassistant/homeassistant/ \
+    && pip3 install \
+    -r homeassistant/requirements.txt --use-deprecated=legacy-resolver \
+    && cp -rf /tmp/core/requirements_all.txt homeassistant/ \
+    && if ls homeassistant/home_assistant_frontend*.whl 1> /dev/null 2>&1; then \
         pip3 install --no-cache-dir --no-index homeassistant/home_assistant_frontend-*.whl; \
     fi \
     && pip3 install \
-    -r homeassistant/requirements_all.txt --use-deprecated=legacy-resolver
-
-## Setup Home Assistant Core
-RUN cp -rf /tmp/core/. homeassistant/
-RUN \
-    pip3 install \
-    -e ./homeassistant --use-deprecated=legacy-resolver \
-    && python3 -m compileall homeassistant/homeassistant
-
-# Home Assistant S6-Overlay
-RUN cp -rf /tmp/core/rootfs /
+	    -r homeassistant/requirements_all.txt --use-deprecated=legacy-resolver \
+	&& cp -rf /tmp/core/. homeassistant/ \
+	&& pip3 install \
+    	-e ./homeassistant --use-deprecated=legacy-resolver \
+    && python3 -m compileall homeassistant/homeassistant \ 
+	&& cp -rf /tmp/core/rootfs / \
+    && apt-get clean \
+    && rm -fr /var/lib/apt/lists/* \ 
+    && find /usr/local \( -type d -a -name test -o -name tests -o -name '__pycache__' \) -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) -exec rm -rf '{}' \; \ 
+    && rm -fr /tmp/* /var/{cache,log}/* /root/.cache
 
 ##### END dependencies from https://github.com/home-assistant/core/blob/dev/Dockerfile
 
-# #install home assistant itself
-# RUN pip install homeassistant
-
 #prepare hacs
 RUN cd /config \
-  && mkdir -p /config/custom_components \
-  && wget -O - https://get.hacs.xyz | bash -
+    && mkdir -p /config/custom_components \
+    && wget -O - https://get.hacs.xyz | bash -
 
 # #create user admin/admin (does not avoid bootstap dialogs)
 # RUN /usr/local/bin/hass --config /config --script auth add admin admin

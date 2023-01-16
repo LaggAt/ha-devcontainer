@@ -41,10 +41,10 @@
 	"remoteUser": "root",
 	"containerUser": "root",
 
-	// // Add the IDs of extensions you want installed when the container is created.
-	// "extensions": [
-	// 	"ms-python.python"
-	// ],
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"ms-python.python"
+	],
 
 	"postCreateCommand": "bash -x /workspaces/ha-devcontainer/.devcontainer/scripts/postCreateContainer.sh",
 	
