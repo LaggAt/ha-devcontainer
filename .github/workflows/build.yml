@@ -15,7 +15,8 @@ on:
     branches:
       - 'main'
   schedule:
-    - cron: '0 0 * * *'
+    # weekly
+    - cron: '0 0 * * 1'
 
 env:
   # Use docker.io for Docker Hub if empty
