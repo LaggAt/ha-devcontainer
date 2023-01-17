@@ -6,9 +6,6 @@
     //linux line breaks
     "files.eol": "\n",
     //prefer ZSH shell
-    "terminal.integrated.profiles.linux": {
-        "zsh": {
-            "path": "/usr/bin/zsh"
-        }
-	},
+    "terminal.integrated.profiles.osx": { "zsh": { "path": "/usr/bin/zsh", "args": ["-l", "-i"] } },
+    "terminal.integrated.profiles.linux": { "zsh": { "path": "/usr/bin/zsh", "args": ["-l", "-i"] } },
 }
