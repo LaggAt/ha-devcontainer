@@ -11,6 +11,7 @@ USER root
 # Environment Variable defaults
 ENV DEVCONTAINER=True
 ENV DEBIAN_FRONTEND=noninteractive
+ENV ZSH=~/.oh-my-zsh
 
 # open ports
 ## hass
@@ -20,16 +21,16 @@ EXPOSE 5678
 
 WORKDIR /tmp
 
+# deploy ha-devcontainer commands, scripts, home assistant basic config, default shell, ...
+COPY copy_root/ /
+
 # install ZSH Shell
 RUN \
 	wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O oh-my-zsh-install.sh \
 	&& rm -rf /root/.oh-my-zsh \
 	&& chmod +x ./oh-my-zsh-install.sh \
-	&& ./oh-my-zsh-install.sh --unattended \
+	&& sudo ./oh-my-zsh-install.sh --unattended \
 	&& rm -f ./oh-my-zsh-install.sh
-
-# deploy ha-devcontainer commands, scripts, home assistant basic config, default shell, ...
-COPY copy_root/ /
 
 #*1) prepare source to copy from for home-assistant/core
 RUN git clone https://github.com/home-assistant/core.git
@@ -48,8 +49,11 @@ WORKDIR /usr/src
 ENV \
     S6_SERVICES_GRACETIME=220000
 
-## Setup Home Assistant Core and dependencies
-RUN mkdir -p homeassistant/homeassistant \
+RUN \
+	apt-get update && \
+	apt-get -y install --no-install-recommends build-essential cmake \
+	# Setup Home Assistant Core and dependencies \
+	&& mkdir -p homeassistant/homeassistant \
     && cp -rf /tmp/core/requirements.txt homeassistant/ \
     && cp -rf /tmp/core/homeassistant/package_constraints.txt homeassistant/homeassistant/ \
     && pip3 install \
@@ -67,7 +71,10 @@ RUN mkdir -p homeassistant/homeassistant \
     #prepare hacs \
     && cd /config \
     && mkdir -p /config/custom_components \
-    && wget -O - https://get.hacs.xyz | bash - \
+    && wget https://get.hacs.xyz -O hacs-install.sh \
+	&& chmod +x ./hacs-install.sh \
+	&& ./hacs-install.sh \
+	&& rm -f ./hacs-install.sh \
     #install 'dev' cli \
     && cd /opt/dev \
     && pip install --editable . \

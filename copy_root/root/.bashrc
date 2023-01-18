@@ -1,5 +1,3 @@
-#!/bin/bash
-
 git config --global core.autocrlf input > /dev/null 2>&1
 
 export DEVCONTAINER="True"
