@@ -21,9 +21,6 @@ EXPOSE 5678
 
 WORKDIR /tmp
 
-# deploy ha-devcontainer commands, scripts, home assistant basic config, default shell, ...
-COPY copy_root/ /
-
 # install ZSH Shell
 RUN \
 	wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O oh-my-zsh-install.sh \
@@ -32,10 +29,13 @@ RUN \
 	&& sudo ./oh-my-zsh-install.sh --unattended \
 	&& rm -f ./oh-my-zsh-install.sh
 
+# deploy ha-devcontainer commands, scripts, home assistant basic config, default shell, ...
+COPY copy_root/ /
+
 #*1) prepare source to copy from for home-assistant/core
 RUN git clone https://github.com/home-assistant/core.git
 # Add Home Assistant wheels repository
-#ENV WHEELS_LINKS=https://wheels.home-assistant.io/musllinux/
+ENV WHEELS_LINKS=https://wheels.home-assistant.io/musllinux/
 
 #*1 from here on, COPY RELATIVE_PATH should get: RUN cp -rf /tmp/core/RELATIVE_PATH
 #   used for https://github.com/home-assistant/core/blob/dev/Dockerfile below
@@ -50,14 +50,18 @@ ENV \
     S6_SERVICES_GRACETIME=220000
 
 RUN \
-	apt-get update && \
-	apt-get -y install --no-install-recommends build-essential cmake \
+    #install 'dev' cli \
+    cd /opt/dev \
+    && pip install --editable . \
+    # install build tools and libs
+	&& apt-get update \
+	&& apt-get -y install --no-install-recommends bluez build-essential cmake libpcap-dev \
 	# Setup Home Assistant Core and dependencies \
 	&& mkdir -p homeassistant/homeassistant \
     && cp -rf /tmp/core/requirements.txt homeassistant/ \
     && cp -rf /tmp/core/homeassistant/package_constraints.txt homeassistant/homeassistant/ \
     && pip3 install \
-    -r homeassistant/requirements.txt --use-deprecated=legacy-resolver \
+        -r homeassistant/requirements.txt --use-deprecated=legacy-resolver \
     && cp -rf /tmp/core/requirements_all.txt homeassistant/ \
     && if ls homeassistant/home_assistant_frontend*.whl 1> /dev/null 2>&1; then \
         pip3 install --no-cache-dir --no-index homeassistant/home_assistant_frontend-*.whl; \
@@ -65,6 +69,7 @@ RUN \
     && pip3 install \
 	    -r homeassistant/requirements_all.txt --use-deprecated=legacy-resolver \
 	&& cp -rf /tmp/core/. homeassistant/ \
+	&& cp -rf /tmp/core/rootfs / \
 	&& pip3 install \
     	-e ./homeassistant --use-deprecated=legacy-resolver \
     && python3 -m compileall homeassistant/homeassistant \ 
@@ -75,13 +80,9 @@ RUN \
 	&& chmod +x ./hacs-install.sh \
 	&& ./hacs-install.sh \
 	&& rm -f ./hacs-install.sh \
-    #install 'dev' cli \
-    && cd /opt/dev \
-    && pip install --editable . \
     #run and Stop home assistant when onboading dialog is shown \
     && /usr/local/bin/dev ha start --install-deps-only \
     #cleanup \
-	&& cp -rf /tmp/core/rootfs / \
     && apt-get clean \
     && rm -fr /var/lib/apt/lists/* \ 
     && find /usr/local \( -type d -a -name test -o -name tests -o -name '__pycache__' \) -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) -exec rm -rf '{}' \; \ 

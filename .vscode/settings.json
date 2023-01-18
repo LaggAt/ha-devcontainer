@@ -8,4 +8,5 @@
     //prefer ZSH shell
     "terminal.integrated.profiles.osx": { "zsh": { "path": "/usr/bin/zsh", "args": ["-l", "-i"] } },
     "terminal.integrated.profiles.linux": { "zsh": { "path": "/usr/bin/zsh", "args": ["-l", "-i"] } },
+    "terminal.integrated.profiles.windows": { "zsh": { "path": "/usr/bin/zsh", "args": ["-l", "-i"] } },
 }

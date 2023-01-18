@@ -1,11 +1,14 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+# Path to your oh-my-zsh installation.
+export ZSH="$HOME/.oh-my-zsh"
+
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="codespaces"
+ZSH_THEME="robbyrussell"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME="codespaces"
@@ -77,7 +80,8 @@ plugins=(
     virtualenv
     vscode
 )
-source ~/.oh-my-zsh/oh-my-zsh.sh
+
+source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
@@ -107,7 +111,7 @@ source ~/.oh-my-zsh/oh-my-zsh.sh
 DISABLE_AUTO_UPDATE=true
 DISABLE_UPDATE_PROMPT=true
 
-#'dev' cli autocompletion for bash
+#'dev' cli autocompletion for zsh
 eval "$(_DEV_COMPLETE=zsh_source dev)"
 
 echo https://github.com/LaggAt/ha-devcontainer
