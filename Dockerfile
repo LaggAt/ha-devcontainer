@@ -1,9 +1,12 @@
-# [Choice] Python version (use -bullseye variants on local arm64/Apple Silicon): 3, 3.10, 3.9, 3.8, 3.7, 3.6, 3-bullseye, 3.10-bullseye, 3.9-bullseye, 3.8-bullseye, 3.7-bullseye, 3.6-bullseye, 3-buster, 3.10-buster, 3.9-buster, 3.8-buster, 3.7-buster, 3.6-buster
-ARG VARIANT="3.10-bullseye"
-FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT} as build
+# [Choice] https://hub.docker.com/r/microsoft/devcontainers-python
+FROM mcr.microsoft.com/devcontainers/python:1-3.13 AS build
 # [Choice] Node.js version: none, lts/*, 16, 14, 12, 10
 ARG NODE_VERSION="none"
 RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+RUN echo "BUILDPLATFORM: $BUILDPLATFORM, TARGETPLATFORM: $TARGETPLATFORM" > /log
 
 # run as root from now on
 USER root
@@ -49,10 +52,14 @@ WORKDIR /usr/src
 ENV \
     S6_SERVICES_GRACETIME=220000
 
+# Get go2rtc binary
+COPY --from=ghcr.io/alexxit/go2rtc:latest /usr/local/bin/go2rtc /bin/go2rtc
+    
 RUN \
-	apt-get update && \
-	apt-get -y install --no-install-recommends build-essential cmake \
-	# Setup Home Assistant Core and dependencies \
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+	&& apt-get update \
+    && apt-get -y install --no-install-recommends build-essential cmake libturbojpeg0 libpcap-dev \
+    # Setup Home Assistant Core and dependencies \
 	&& mkdir -p homeassistant/homeassistant \
     && cp -rf /tmp/core/requirements.txt homeassistant/ \
     && cp -rf /tmp/core/homeassistant/package_constraints.txt homeassistant/homeassistant/ \
@@ -65,21 +72,25 @@ RUN \
     && pip3 install \
 	    -r homeassistant/requirements_all.txt --use-deprecated=legacy-resolver \
 	&& cp -rf /tmp/core/. homeassistant/ \
+    && cd homeassistant/ \
+    && python -m script.translations develop --all \
+    && cd .. \
 	&& pip3 install \
     	-e ./homeassistant --use-deprecated=legacy-resolver \
     && python3 -m compileall homeassistant/homeassistant \ 
-    #prepare hacs \
-    && cd /config \
-    && mkdir -p /config/custom_components \
-    && wget https://get.hacs.xyz -O hacs-install.sh \
-	&& chmod +x ./hacs-install.sh \
-	&& ./hacs-install.sh \
-	&& rm -f ./hacs-install.sh \
     #install 'dev' cli \
     && cd /opt/dev \
     && pip install --editable . \
     #run and Stop home assistant when onboading dialog is shown \
     && /usr/local/bin/dev ha start --install-deps-only \
+    #prepare hacs \
+    && cd /config \
+    && mkdir -p /config/custom_components \
+    && wget https://get.hacs.xyz -O hacs-install.sh \
+	&& chmod +x ./hacs-install.sh  \
+	&& touch home-assistant.log \
+    && ./hacs-install.sh \
+	&& rm -f ./hacs-install.sh \
     #cleanup \
 	&& cp -rf /tmp/core/rootfs / \
     && apt-get clean \
